@@ -1,10 +1,10 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovementController : MonoBehaviour
 {
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private CharacterController playerCharacterController;
+    [SerializeField] private Rigidbody playerRb;
     [SerializeField] private PlayerRotationController playerRotationController;
     [SerializeField] private InputActionReference movementInput;
     [SerializeField][Range(1.1f, 100f)] private float MaxSpeed = 2f;
@@ -29,6 +29,11 @@ public class PlayerMovementController : MonoBehaviour
         DetermineDirection();
         DeterminePlayerSpeed();
         MoveCharacter();
+    }
+
+    private void FixedUpdate()
+    {
+        playerRb.MovePosition(playerRb.position + MovementDirection * _currentPlayerSpeed * Time.fixedDeltaTime);
     }
 
     private Vector2 ReadInput()
@@ -58,12 +63,12 @@ public class PlayerMovementController : MonoBehaviour
 
     private void MoveCharacter()
     {
-        Debug.Log($"Input: {PlayerInput} | Direction: {MovementDirection} | Speed: {_currentPlayerSpeed} | Rotating: {playerRotationController.IsRotating}");
+        //Debug.Log($"Input: {PlayerInput} | Direction: {MovementDirection} | Speed: {_currentPlayerSpeed} | Rotating: {playerRotationController.IsRotating}");
 
         if (playerRotationController.IsRotating)
             return;
 
-        playerCharacterController.Move(MovementDirection * _currentPlayerSpeed * Time.deltaTime);
+
     }
 
     private void DeterminePlayerSpeed()
