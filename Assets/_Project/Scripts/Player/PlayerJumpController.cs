@@ -1,10 +1,12 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.UI.Image;
 
 public class PlayerJumpController : MonoBehaviour
 {
     [SerializeField] private InputActionReference jumpInput;
+    [SerializeField] private PlayerActionQueue playerActionQueue;
     [SerializeField] private Rigidbody playerRb;
     [SerializeField] private int jumpNumber = 1;
     [SerializeField] private float jumpForce = 5f;
@@ -12,27 +14,44 @@ public class PlayerJumpController : MonoBehaviour
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float groundCheckRadius = 0.1f;
     [SerializeField] private LayerMask groundLayer;
+    [SerializeField][Range(0f, 1f)] private float coyoteTime = 0.2f;
 
     private int _currentJumpCount;
     public bool IsGrounded { get; private set; }
+    private float _coyoteTimeCounter;
 
     private void Start()
     {
         jumpInput.action.performed += TryJump;
         _currentJumpCount = 0;
     }
-
-    private void Update()
+    private bool CanJump()
     {
         Vector3 origin = transform.position + Vector3.up * groundCheckRadius;
-        IsGrounded = Physics.SphereCast(origin, groundCheckRadius, Vector3.down, out RaycastHit groundHit, groundCheckDistance + 0.01f, groundLayer, QueryTriggerInteraction.Ignore);
 
-        if (IsGrounded && _currentJumpCount != 0)
+        IsGrounded = Physics.SphereCast(
+            origin,
+            groundCheckRadius,
+            Vector3.down,
+            out RaycastHit groundHit,
+            groundCheckDistance,
+            groundLayer
+        );
+
+        if (IsGrounded)
         {
             _currentJumpCount = 0;
+            _coyoteTimeCounter = 0f;
+            return true;
         }
 
-        Debug.Log($"[PlayerJumpController] Is Grounded: {IsGrounded} | Current Jump Count: {_currentJumpCount}");
+        if (_currentJumpCount == 0)
+        {
+            _coyoteTimeCounter += Time.deltaTime;
+            return _coyoteTimeCounter <= coyoteTime;
+        }
+
+        return false;
     }
 
     private void OnDestroy()
@@ -40,6 +59,11 @@ public class PlayerJumpController : MonoBehaviour
         jumpInput.action.performed -= TryJump;
     }
     private void TryJump(InputAction.CallbackContext context)
+    {
+        //if (!CanJump()) return;
+        playerActionQueue.ExecuteAction(CanJump, Jump);
+    }
+    private void Jump()
     {
         if (_currentJumpCount < jumpNumber)
         {

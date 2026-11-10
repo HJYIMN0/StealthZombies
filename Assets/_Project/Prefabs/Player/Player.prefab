@@ -121,6 +121,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1430592207278980385}
+  - component: {fileID: 3564016047961772843}
   - component: {fileID: 6776484639969559927}
   - component: {fileID: 3356394263342564836}
   - component: {fileID: 9211251284551081062}
@@ -151,6 +152,18 @@ Transform:
   - {fileID: 5170882318072651392}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3564016047961772843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6578940227470042013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3616c6e05fea09a478feb2c3b88477d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerActionQueue
 --- !u!114 &6776484639969559927
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerJumpController
   jumpInput: {fileID: -2099379676528639254, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  playerActionQueue: {fileID: 3564016047961772843}
   playerRb: {fileID: 7412205125639131217}
   jumpNumber: 1
   jumpForce: 5
@@ -225,6 +239,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 55
+  coyoteTime: 0.2
 --- !u!54 &7412205125639131217
 Rigidbody:
   m_ObjectHideFlags: 0
