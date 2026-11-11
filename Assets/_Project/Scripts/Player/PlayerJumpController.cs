@@ -9,8 +9,7 @@ public class PlayerJumpController : MonoBehaviour
     [SerializeField] private PlayerActionQueue playerActionQueue;
     [SerializeField] private Rigidbody playerRb;
     [SerializeField] private int jumpNumber = 1;
-    [SerializeField] private float jumpForce = 5f;
-    [SerializeField] private ForceMode jumpForceMode = ForceMode.Impulse;
+    [SerializeField] private float jumpHeight = 2f;
     [SerializeField] private float groundCheckDistance = 0.1f;
     [SerializeField] private float groundCheckRadius = 0.1f;
     [SerializeField] private LayerMask groundLayer;
@@ -68,8 +67,16 @@ public class PlayerJumpController : MonoBehaviour
         if (_currentJumpCount < jumpNumber)
         {
             _currentJumpCount++;
+
             Debug.Log($"Jumping! Current jump count: {_currentJumpCount}");
-            playerRb.AddForce(Vector3.up * jumpForce, jumpForceMode);
+
+            // Calcola la velocità iniziale necessaria per raggiungere l'altezza desiderata.
+            float jumpVelocity = Mathf.Sqrt(2f * Mathf.Abs(Physics.gravity.y) * jumpHeight);
+
+            // Imposta la velocità verticale senza alterare quella orizzontale.
+            Vector3 velocity = playerRb.linearVelocity;
+            velocity.y = jumpVelocity;
+            playerRb.linearVelocity = velocity;
         }
     }
 

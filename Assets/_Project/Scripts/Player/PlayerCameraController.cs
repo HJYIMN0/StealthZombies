@@ -1,4 +1,6 @@
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class PlayerCameraController : MonoBehaviour
@@ -9,7 +11,14 @@ public class PlayerCameraController : MonoBehaviour
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject aimingCamera;
 
-    private bool IsAiming => aimingCamera.activeSelf;
+    [Header("Gameplay Settings")]
+    [SerializeField] private PlayerJumpController playerJumpController;
+    [SerializeField] private bool canShootWhileJumping = true;
+
+    public bool IsAiming => aimingCamera.activeSelf;
+
+    public Camera ActiveCamera => IsAiming ? aimingCamera.GetComponent<Camera>() : mainCamera.GetComponent<Camera>();
+    public UnityEvent OnCameraChanged;
 
     private void Start()
     {
@@ -21,10 +30,14 @@ public class PlayerCameraController : MonoBehaviour
     {
         if (aimingInput.action.IsPressed())
         {
+            if (!playerJumpController.IsGrounded && !canShootWhileJumping)
+                return;
+
             if (aimingCamera.activeSelf)
                 return;
             mainCamera.SetActive(false);
             aimingCamera.SetActive(true);
+            OnCameraChanged?.Invoke();
         }
         else
         {
@@ -32,20 +45,7 @@ public class PlayerCameraController : MonoBehaviour
                 return;
             mainCamera.SetActive(true);
             aimingCamera.SetActive(false);
-        }
-    }
-
-    private void OnAimingPerformed(InputAction.CallbackContext context)
-    {
-        if (context.action.inProgress)
-        {
-            mainCamera.SetActive(false);
-            aimingCamera.SetActive(true);
-        }
-        else
-        {
-            mainCamera.SetActive(true);
-            aimingCamera.SetActive(false);
+            OnCameraChanged?.Invoke();
         }
     }
 
